@@ -1,6 +1,5 @@
 package com.communitcation.rest.client;
 
-import com.communitcation.rest.service.RestTemplateComponent;
 import lombok.*;
 import org.apache.hc.core5.http.Method;
 import org.springframework.http.*;
@@ -21,6 +20,5 @@ public class CommunicationInfo {
     private Object requestData; // 요청 데이터 문자열
     private Map<String,String> headers; // 추가적인 헤더
     private RequestFormat requestFormat; // 요청 데이터 형식
-    private RestTemplateComponent restClient; // RestTemplate 객체
     private Class<?> responseClazz; // 응답 데이터 클래스 타입
 }
