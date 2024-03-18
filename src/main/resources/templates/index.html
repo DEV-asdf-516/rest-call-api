@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>HELLO AI</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+            margin: 0;
+            padding-top: 1.5vh;
+        }
+        form {
+            margin-bottom: 10px;
+            padding: 20px;
+            width: 600px;
+            display: flex;
+            align-items: center;
+        }
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            margin-right: 10px;
+        }
+        button {
+            padding: 10px 20px;
+        }
+       </style>
+</head>
+<body>
+    <h1>AI 이미지 생성기</h1>
+    <form th:action="@{/karlo-img}" method="post">
+        <input type="text" id="prompt" name="prompt" placeholder="예: 산책하는 귀여운 웰시코기, 사진같은, 8k 이미지"
+               required>
+        <button type="submit">생성</button>
+    </form>
+
+    <div th:if="${session.genImage != null}">
+        <img th:src="@{${session.genImage}}" alt="AI 이미지">
+    </div>
+</body>
+</html>

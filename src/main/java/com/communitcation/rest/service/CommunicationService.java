@@ -1,0 +1,182 @@
+package com.communitcation.rest.service;
+
+import com.communitcation.rest.client.CommunicationInfo;
+import com.communitcation.rest.client.RequestFormat;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.Nullable;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.core5.http.Method;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
+
+import java.io.IOException;
+import java.time.Duration;
+import java.util.List;
+import java.util.Map;
+
+@Service
+public class CommunicationService {
+    private Duration duration = Duration.ofSeconds(60);
+
+    private List<Method> paramList = List.of(Method.GET, Method.DELETE);
+    private List<Method> bodyList = List.of(Method.POST, Method.PUT);
+
+    // 통신 메서드
+    public <T> T communicate(CommunicationInfo communicationInfo) throws IOException {
+        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+        try{
+            RestTemplateComponent restClient = createRestClient(httpClient);
+            communicationInfo.setRestClient(restClient);
+            RequestFormat format = findRequestFormat(communicationInfo.getMethod(),communicationInfo.getRequestFormat());
+            communicationInfo.setRequestFormat(format);
+            ResponseEntity<?> responseData = getResponse(communicationInfo);
+            return (T) responseData.getBody();
+        }catch (HttpClientErrorException | HttpServerErrorException  e){
+            e.printStackTrace();
+        }
+        finally {
+            httpClient.close();
+        }
+        return null;
+    }
+
+    // restTemplate 설정
+    private RestTemplateComponent createRestClient(CloseableHttpClient httpClient) {
+        RestTemplate restTemplate = new RestTemplate();
+        HttpComponentsClientHttpRequestFactory httpRequestFactory = new HttpComponentsClientHttpRequestFactory();
+        httpRequestFactory.setConnectionRequestTimeout(duration); // 요청 시간
+        httpRequestFactory.setConnectTimeout(duration); // tcp 연결 시간
+        restTemplate.setRequestFactory(httpRequestFactory);
+        RestTemplateComponent restClient = new RestTemplateComponent();
+        restClient.setRestTemplate(restTemplate);
+        return restClient;
+    }
+
+    // 요청 형태 설정
+    private RequestFormat findRequestFormat(Method method,RequestFormat format){
+        if(format == null){
+            if(paramList.contains(method)){
+                return  RequestFormat.QUERY_PARAM;
+            }
+            else{
+                return RequestFormat.BODY;
+            }
+        }
+        return format;
+    }
+
+    // 헤더 생성
+    private HttpHeaders createHeaders(CommunicationInfo communicationInfo){
+        HttpHeaders headers;
+        RequestFormat format = communicationInfo.getRequestFormat();
+        RestTemplateComponent client = communicationInfo.getRestClient();
+        Map<String,String> customHeaders = communicationInfo.getHeaders();
+        if(format == RequestFormat.QUERY_PARAM){
+            headers =  client.createQueryParamHeader();
+        }
+        else {
+            if(communicationInfo.getMediaType() == null){
+                headers = client.createBodyHeader(MediaType.APPLICATION_JSON);
+            }
+            else {
+                headers = client.createBodyHeader(communicationInfo.getMediaType());
+            }
+        }
+        if (customHeaders != null){
+            MultiValueMap<String,String> multiValueMapHeader = new LinkedMultiValueMap<>();
+            multiValueMapHeader.setAll(customHeaders);
+            headers.addAll(multiValueMapHeader);
+        }
+        return headers;
+    }
+
+    // uri 생성
+    private String createUri(CommunicationInfo communicationInfo){
+        String uriString;
+        RequestFormat format = communicationInfo.getRequestFormat();
+        if(format == RequestFormat.QUERY_PARAM){
+            uriString = UriComponentsBuilder
+                    .newInstance()
+                    .scheme(communicationInfo.getScheme())
+                    .host(communicationInfo.getHost())
+                    .port(communicationInfo.getPort())
+                    .path(communicationInfo.getPath())
+                    .queryParams(convertBodyToMultiValueMap((String) communicationInfo.getRequestData()))
+                    .build()
+                    .encode() // 한글 UTF-8 인코딩 문제 발생하는 경우 주석처리
+                    .toUriString();
+        }
+        else {
+            uriString = UriComponentsBuilder
+                    .newInstance()
+                    .scheme(communicationInfo.getScheme())
+                    .host(communicationInfo.getHost())
+                    .port(communicationInfo.getPort())
+                    .path(communicationInfo.getPath())
+                    .build()
+                    .encode()
+                    .toUriString();
+        }
+        return uriString;
+    }
+
+    // response 
+    private <T> ResponseEntity<?>  getResponse(CommunicationInfo communicationInfo) {
+        Method method = communicationInfo.getMethod();
+        HttpHeaders headers = createHeaders(communicationInfo); // 헤더 생성
+        RestTemplateComponent client = communicationInfo.getRestClient();
+        String uri = createUri(communicationInfo); // uri 생성
+        Class<?> clazz = communicationInfo.getResponseClazz();
+        RequestFormat format = communicationInfo.getRequestFormat();
+        Object requestData = (format == RequestFormat.QUERY_PARAM)? "" : communicationInfo.getRequestData();
+        ResponseEntity<?> response = byMethod(client,method,headers,uri,requestData,clazz);
+        if (response == null) {
+            throw new NullPointerException();
+        }
+        return response;
+    }
+
+    // 메서드 유형에 따라서 GET, POST, PUT, DELETE 호출
+    private  ResponseEntity<?>  byMethod(
+            RestTemplateComponent client,
+            Method method,
+            HttpHeaders headers,
+            String uri,
+            @Nullable Object body,
+            Class<?> clazz
+        ){
+       return switch(method){
+           case GET -> client.getMethod(headers,uri,clazz);
+           case POST -> client.postMethod(headers,uri,body,clazz);
+           case PUT -> client.putMethod(headers,uri,body,clazz);
+           case DELETE -> client.deleteMethod(headers,uri,clazz);
+           default -> null;
+        };
+    }
+
+    // query param 생성
+    public MultiValueMap<String, String> convertBodyToMultiValueMap(String body){
+        MultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<>();
+        try{
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(body);
+            jsonNode.fields().forEachRemaining(entry -> {
+                multiValueMap.add(entry.getKey(), entry.getValue().asText());
+            });
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return multiValueMap;
+    }
+}
