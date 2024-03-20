@@ -23,6 +23,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import static com.communitcation.rest.util.JsonUtil.toJson;
 
 @Service
 @RequiredArgsConstructor
@@ -98,7 +99,7 @@ public class CommunicationService {
                     .host(communicationInfo.getHost())
                     .port(communicationInfo.getPort())
                     .path(communicationInfo.getPath())
-                    .queryParams(convertBodyToMultiValueMap((String) communicationInfo.getRequestData()))
+                    .queryParams(convertBodyToMultiValueMap(toJson(communicationInfo.getRequestData())))
                     .build()
                     .encode() // 한글 UTF-8 인코딩 문제 발생하는 경우 주석처리
                     .toUriString();

@@ -59,7 +59,7 @@ public class RestApiService {
                 .path(shortUrlPath)
                 .method(Method.GET)
                 .headers(naverReqHeader)
-                .requestData(toJson(requestMap))
+                .requestData(requestMap)
                 .responseClazz(String.class)
                 .build();
 
@@ -99,10 +99,9 @@ public class RestApiService {
                 .path(genImgPath)
                 .method(Method.POST)
                 .headers(karloReqHeader)
-                .requestData(toJson(requestMap))
+                .requestData(requestMap)
                 .responseClazz(String.class)
                 .build();
-
         String imgRes = communicationService.communicate(karloGenApiInfo);
         System.out.println(imgRes);
         Map<String,Object> imgResMap = fromJson(imgRes);
