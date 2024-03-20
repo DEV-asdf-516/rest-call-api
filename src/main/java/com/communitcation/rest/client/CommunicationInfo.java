@@ -17,7 +17,7 @@ public class CommunicationInfo {
     private String port; // 포트
     private Method method; // http method
     private MediaType mediaType; // 미디어타입
-    private Object requestData; // 요청 데이터 문자열
+    private Object requestData; // 요청 데이터
     private Map<String,String> headers; // 추가적인 헤더
     private RequestFormat requestFormat; // 요청 데이터 형식
     private Class<?> responseClazz; // 응답 데이터 클래스 타입

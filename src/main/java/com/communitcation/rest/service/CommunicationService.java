@@ -125,7 +125,7 @@ public class CommunicationService {
         String uri = createUri(communicationInfo); // uri 생성
         Class<?> clazz = communicationInfo.getResponseClazz();
         RequestFormat format = communicationInfo.getRequestFormat();
-        Object requestData = (format == RequestFormat.QUERY_PARAM)? "" : communicationInfo.getRequestData();
+        Object requestData = (format == RequestFormat.QUERY_PARAM)? null : communicationInfo.getRequestData();
         ResponseEntity<?> response = byMethod(restClient,method,headers,uri,requestData,clazz);
         if (response == null) {
             throw new NullPointerException();
