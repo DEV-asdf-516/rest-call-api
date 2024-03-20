@@ -60,11 +60,10 @@ public class RestApiService {
                 .method(Method.GET)
                 .headers(naverReqHeader)
                 .requestData(requestMap)
-                .responseClazz(String.class)
+                .responseClazz(Map.class)
                 .build();
 
-        String urlRes = communicationService.communicate(naverShortUrlApiInfo);
-        Map<String,Object> urlResMap = fromJson(urlRes);
+        Map<String,Object> urlResMap = communicationService.communicate(naverShortUrlApiInfo);
         String resToStr = toJson(urlResMap.get("result"));
         UrlDto shortUrl = fromJson(resToStr, UrlDto.Builder.class).build();
         return  shortUrl;
@@ -100,11 +99,10 @@ public class RestApiService {
                 .method(Method.POST)
                 .headers(karloReqHeader)
                 .requestData(requestMap)
-                .responseClazz(String.class)
+                .responseClazz(Map.class)
                 .build();
-        String imgRes = communicationService.communicate(karloGenApiInfo);
-        System.out.println(imgRes);
-        Map<String,Object> imgResMap = fromJson(imgRes);
+        Map<String,Object> imgResMap = communicationService.communicate(karloGenApiInfo);
+        System.out.println(imgResMap);
         String imagesToStr = toJson(imgResMap.get("images"));
         TypeToken<List<ImageDto>> imagesTypeToken = new TypeToken<List<ImageDto>>() {};
         List<ImageDto> images = fromJson(imagesToStr, imagesTypeToken);
