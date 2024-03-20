@@ -27,7 +27,7 @@ public class RestTemplateComponent {
     // get
     public <T> ResponseEntity<T> getMethod(HttpHeaders headers, String url, Class<T> clazz){
         HttpEntity<T>  getRequestEntity = new HttpEntity<>(headers);
-        ResponseEntity<T> getResponse = (ResponseEntity<T>) restConfig
+        ResponseEntity<T> getResponse =  restConfig
                 .restTemplate()
                 .exchange(url, HttpMethod.GET,getRequestEntity,clazz);
         return getResponse;
@@ -54,7 +54,7 @@ public class RestTemplateComponent {
     // delete
     public <T> ResponseEntity<T> deleteMethod(HttpHeaders headers, String url, Class<T> clazz){
         HttpEntity<T> deleteRequestEntity = new HttpEntity<>(headers);
-        ResponseEntity<T> deleteResponse = (ResponseEntity<T>) restConfig
+        ResponseEntity<T> deleteResponse =  restConfig
                 .restTemplate()
                 .exchange(url,HttpMethod.DELETE,deleteRequestEntity,clazz);
         return deleteResponse;

@@ -2,9 +2,7 @@ package com.communitcation.rest.util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.LongSerializationPolicy;
 import com.google.gson.reflect.TypeToken;
-import org.apache.commons.collections4.map.ListOrderedMap;
 
 import java.util.Map;
 
@@ -49,11 +47,4 @@ public class JsonUtil {
                 .create();
         return gson.fromJson(json, new TypeToken<Map<String, Object>>() {}.getType());
     }
-
-    private class JsonMap<K, V> extends ListOrderedMap<K, V> {
-        private static final long serialVersionUID = 1L;
-    }
-
-
-
 }
