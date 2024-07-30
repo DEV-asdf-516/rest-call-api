@@ -28,9 +28,14 @@
         button {
             padding: 10px 20px;
         }
+         .dark-mode {
+             background-color: black;
+             color: white;
+         }
+
        </style>
 </head>
-<body>
+<body class="dark-mode">
     <h1>AI 이미지 생성기</h1>
     <form th:action="@{/karlo-img}" method="post">
         <input type="text" id="prompt" name="prompt" placeholder="예: 산책하는 귀여운 웰시코기, 사진같은, 8k 이미지"

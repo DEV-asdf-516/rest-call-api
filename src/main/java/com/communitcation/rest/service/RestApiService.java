@@ -120,7 +120,7 @@ public class RestApiService {
         ChatMessage chatMessage = new ChatMessage(ChatMessageRole.USER.value(),message);
         ChatCompletionRequest chatCompletionRequest = ChatCompletionRequest.builder()
                 .messages(List.of(chatMessage))
-                .model("gpt-4-vision-preview")
+                .model("gpt-3.5-turbo")
                 .build();
 
         ChatCompletionResult response = openAiService.createChatCompletion(chatCompletionRequest);
