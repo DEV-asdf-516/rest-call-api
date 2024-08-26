@@ -2,6 +2,7 @@
 
  1. https://velog.io/@asdf-dev/spring-boot-rest-template
  2. https://velog.io/@asdf-dev/spring-boot-open-api
+ 3. https://velog.io/@asdf-dev/Spring-boot-GitLab-CICD-Heroku
 
 ## 📌 application.yml 
 
@@ -26,3 +27,8 @@ api:
   gpt:
     key: your-key
 ```
+
+<br>
+
+##### 🎮 SCREEN SHOT
+![ai](https://github.com/user-attachments/assets/55c8d6f7-e85f-45e6-9274-a75295fd7cd2)
