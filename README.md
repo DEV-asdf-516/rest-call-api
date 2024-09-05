@@ -32,3 +32,8 @@ api:
 
 ##### 🎮 SCREEN SHOT
 ![ai](https://github.com/user-attachments/assets/55c8d6f7-e85f-45e6-9274-a75295fd7cd2)
+
+<br>
+
+##### 🌍 DEPLOYMENT
+> https://gen-image-web-server-a5817d1d5219.herokuapp.com/
