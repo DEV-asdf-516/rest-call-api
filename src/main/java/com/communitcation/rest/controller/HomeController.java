@@ -1,5 +1,6 @@
 package com.communitcation.rest.controller;
 
+import com.communitcation.rest.service.GenerateImageService;
 import com.communitcation.rest.service.RestApiService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -12,24 +13,22 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class HomeController {
 
-    private final RestApiService restApiService;
+    private final GenerateImageService generateImageService;
 
     @RequestMapping("/")
     public String index() {
         return "index";
     }
 
-    @PostMapping("/karlo-img")
-    public String kakaoGenAiImageApi(
+    @PostMapping("/ai-img")
+    public String openAiImageApi(
             @RequestBody  String prompt,
             HttpServletRequest request
-    ) throws IOException {
-          String genImage =  restApiService.makeAiImageByKakao(prompt);
+    ) {
+          String genImage =  generateImageService.generateImageUrl(prompt);
           HttpSession session = request.getSession();
           session.setAttribute("genImage",genImage);
           session.setAttribute("prompt", prompt);
         return "redirect:/";
     }
-
-
 }

@@ -22,8 +22,6 @@ api:
   naver:
     client-id:  your-id
     client-key: your-key
-  kakao:
-    key: your-key
   gpt:
     key: your-key
 ```

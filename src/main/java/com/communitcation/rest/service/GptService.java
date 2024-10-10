@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import com.theokanning.openai.service.OpenAiService;
 
+import java.time.Duration;
+
 @Configuration
 public class GptService {
 
@@ -12,7 +14,7 @@ public class GptService {
     private String gptKey;
     @Bean
     public OpenAiService openAiService(){
-          OpenAiService service = new OpenAiService(gptKey);
+          OpenAiService service = new OpenAiService(gptKey, Duration.ofSeconds(120));
           return service;
     }
 }
